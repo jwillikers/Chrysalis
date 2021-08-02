@@ -36,6 +36,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { toast } from "react-toastify";
 
 import i18n from "../i18n";
+import { KeymapDB } from "../../api/keymap";
 import { navigate } from "../routerHistory";
 
 const styles = theme => ({
@@ -55,6 +56,9 @@ class MacroStep extends React.Component {
     const stepTitle = i18n.t("macroEditor.steps." + step.type);
     let stepVals = "";
 
+    console.log(step);
+    const db = new KeymapDB();
+
     if (step.type == "INTERVAL" || step.type == "WAIT") {
       stepVals = step.value;
     }
@@ -67,11 +71,18 @@ class MacroStep extends React.Component {
       step.type == "KEYCODEUP" ||
       step.type == "TAPCODE"
     ) {
-      stepVals = step.value;
+      const key = db.format(step.value);
+      const hm = [key.hint, key.main];
+      stepVals = hm.join(" ");
     }
 
     if (step.type == "TAPCODESEQUENCE" || step.type == "TAPSEQUENCE") {
-      stepVals = step.value.join(" ");
+      const keys = [];
+      for (let key of step.value) {
+        const fkey = db.format(key);
+        keys.push(fkey.main);
+      }
+      stepVals = keys.join(" ");
     }
 
     return (

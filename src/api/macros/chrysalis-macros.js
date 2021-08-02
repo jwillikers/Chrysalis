@@ -15,6 +15,7 @@
  */
 
 import Focus from "../focus";
+import { KeymapDB } from "../keymap";
 
 global.chrysalis_macros_instance = null;
 
@@ -25,12 +26,12 @@ class Macros {
         this.stepEnd(),
         this.stepu8("INTERVAL", 1),
         this.stepu8("WAIT", 2),
-        this.stepu16("KEYDOWN", 3),
-        this.stepu16("KEYUP", 4),
-        this.stepu16("TAP", 5),
-        this.stepu8("KEYCODEDOWN", 6),
-        this.stepu8("KEYCODEUP", 7),
-        this.stepu8("TAPCODE", 8),
+        this.stepkey("KEYDOWN", 3),
+        this.stepkey("KEYUP", 4),
+        this.stepkey("TAP", 5),
+        this.stepkeyCode("KEYCODEDOWN", 6),
+        this.stepkeyCode("KEYCODEUP", 7),
+        this.stepkeyCode("TAPCODE", 8),
         this.stepEmpty("EXPLICIT_REPORT", 9),
         this.stepEmpty("IMPLICIT_REPORT", 10),
         this.stepEmpty("SEND_REPORT", 11),
@@ -91,20 +92,43 @@ class Macros {
     };
   }
 
-  stepu16(type, id) {
+  stepkey(type, id) {
     return {
       parse: function(data) {
+        const db = new KeymapDB();
+
         return {
           macroStep: {
             type: type,
-            value: data[0] * 256 + data[1]
+            value: db.lookup(data[0] * 256 + data[1])
           },
           advance: 2
         };
       },
       serialize: function(data) {
         if (data.type == type) {
-          return [id, Math.floor(data.value / 256), data.value % 256];
+          return [id, Math.floor(data.value.code / 256), data.value.code % 256];
+        }
+      }
+    };
+  }
+
+  stepkeyCode(type, id) {
+    return {
+      parse: function(data) {
+        const db = new KeymapDB();
+
+        return {
+          macroStep: {
+            type: type,
+            value: db.lookup(data[0])
+          },
+          advance: 1
+        };
+      },
+      serialize: function(data) {
+        if (data.type == type) {
+          return [id, data.value.code];
         }
       }
     };
@@ -113,14 +137,16 @@ class Macros {
   stepTapSequence() {
     return {
       parse: function(data) {
+        const db = new KeymapDB();
+
         let pos = 0;
         let sequence = [];
         let key = 0;
         do {
-          key = data[pos] * 256 + data[pos + 1];
-          if (key > 0) sequence.push(key);
+          key = db.lookup(data[pos] * 256 + data[pos + 1]);
+          if (key.code > 0) sequence.push(key);
           pos += 2;
-        } while (key > 0);
+        } while (key.code > 0);
         return {
           macroStep: {
             type: "TAPSEQUENCE",
@@ -133,8 +159,8 @@ class Macros {
         if (data.type == "TAPSEQUENCE") {
           let ser = [12];
           for (let i = 0; i < data.value.length; i++) {
-            ser.push(Math.floor(data.value[i] / 256));
-            ser.push(data.value[i] % 256);
+            ser.push(Math.floor(data.value[i].code / 256));
+            ser.push(data.value[i].code % 256);
           }
           ser.push(0);
           ser.push(0);
@@ -147,14 +173,16 @@ class Macros {
   stepTapCodeSequence() {
     return {
       parse: function(data) {
+        const db = new KeymapDB();
+
         let pos = 0;
         let sequence = [];
         let key = 0;
         do {
-          key = data[pos];
-          if (key > 0) sequence.push(key);
+          key = db.lookup(data[pos]);
+          if (key.code > 0) sequence.push(key);
           pos += 1;
-        } while (key > 0);
+        } while (key.code > 0);
         return {
           macroStep: {
             type: "TAPCODESEQUENCE",
@@ -167,7 +195,7 @@ class Macros {
         if (data.type == "TAPCODESEQUENCE") {
           let ser = [13];
           for (let i = 0; i < data.value.length; i++) {
-            ser.push(data.value[i]);
+            ser.push(data.value[i].code);
           }
           ser.push(0);
           return ser;
