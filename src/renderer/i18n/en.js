@@ -44,6 +44,7 @@ const English = {
       welcome: "Welcome",
       systemInfo: "System Information",
       editor: "Layout & Colormap Editor",
+      macroEditor: "Macro Editor",
       layoutEditor: "Layout Editor",
       colormapEditor: "Colormap Editor",
       firmwareUpdate: "Firmware Update",
@@ -69,6 +70,25 @@ const English = {
       content: "You have unsaved changes. If you proceed, they will be lost."
     },
     actionRequired: "Action required"
+  },
+  macroEditor: {
+    title: "Macro Editor",
+    macroTitle: "Macro #{{ index }}",
+    steps: {
+      INTERVAL: "Set step interval",
+      WAIT: "Wait",
+      KEYDOWN: "Key down",
+      KEYUP: "Key up",
+      TAP: "Tap key",
+      KEYCODEDOWN: "Keycode down",
+      KEYCODEUP: "Keycode up",
+      TAPCODE: "Tap keycode",
+      EXPLICIT_REPORT: "Use explicit reporting",
+      IMPLICIT_REPORT: "Use implicit reporting",
+      SEND_REPORT: "Send report",
+      TAPSEQUENCE: "Tap key sequence",
+      TAPCODESEQUENCE: "Tap Keycode Sequence"
+    }
   },
   editor: {
     keyType: "Key type",

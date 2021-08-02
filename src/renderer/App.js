@@ -23,6 +23,7 @@ import Focus from "../api/focus";
 import Log from "../api/log";
 import "../api/keymap";
 import "../api/colormap";
+import "../api/macros";
 import "typeface-roboto/index.css";
 import "typeface-source-code-pro/index.css";
 import { LocationProvider, Router } from "@reach/router";
@@ -40,6 +41,7 @@ import "react-toastify/dist/ReactToastify.css";
 import KeyboardSelect from "./screens/KeyboardSelect";
 import FirmwareUpdate from "./screens/FirmwareUpdate";
 import Editor from "./screens/Editor/Editor";
+import MacroEditor from "./screens/MacroEditor";
 import Preferences from "./screens/Preferences";
 import Welcome from "./screens/Welcome";
 import SystemInfo from "./screens/SystemInfo";
@@ -185,7 +187,8 @@ class App extends React.Component {
           commands.includes("keymap.map") > 0,
         colormap:
           commands.includes("colormap.map") > 0 &&
-          commands.includes("palette") > 0
+          commands.includes("palette") > 0,
+        macros: commands.includes("macros.map")
       };
     }
 
@@ -194,7 +197,8 @@ class App extends React.Component {
       device: null,
       pages: pages
     });
-    await navigate(pages.keymap || pages.colormap ? "/editor" : "/welcome");
+    //await navigate(pages.keymap || pages.colormap ? "/editor" : "/welcome");
+    await navigate("/macros");
     return commands;
   };
 
@@ -266,6 +270,15 @@ class App extends React.Component {
                 />
                 <Editor
                   path="/editor"
+                  onDisconnect={this.onKeyboardDisconnect}
+                  startContext={this.startContext}
+                  cancelContext={this.cancelContext}
+                  inContext={this.state.contextBar}
+                  titleElement={() => document.querySelector("#page-title")}
+                  appBarElement={() => document.querySelector("#appbar")}
+                />
+                <MacroEditor
+                  path="/macros"
                   onDisconnect={this.onKeyboardDisconnect}
                   startContext={this.startContext}
                   cancelContext={this.cancelContext}

@@ -1,6 +1,6 @@
 // -*- mode: js-jsx -*-
 /* Chrysalis -- Kaleidoscope Command Center
- * Copyright (C) 2018, 2019, 2020  Keyboardio, Inc.
+ * Copyright (C) 2018-2021  Keyboardio, Inc.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free Software
@@ -35,6 +35,7 @@ import { version } from "../../../../package.json";
 import WelcomeMenu from "./WelcomeMenu";
 import SystemInfoMenuItem from "./SystemInfoMenuItem";
 import EditorMenuItem from "./EditorMenuItem";
+import MacroEditorMenuItem from "./MacroEditorMenuItem";
 import FlashMenuItem from "./FlashMenuItem";
 import ChatMenuItem from "./ChatMenuItem";
 import FeedbackMenuItem from "./FeedbackMenuItem";
@@ -119,6 +120,15 @@ function MainMenu({ open, closeMenu, classes, connected, pages }) {
                 selected={currentPage == "/editor"}
                 className={classes.menuItem}
                 onClick={() => setCurrentPage("/editor")}
+              />
+            </Link>
+          )}
+          {pages.macros && (
+            <Link to="/macros" className={classes.link}>
+              <MacroEditorMenuItem
+                selected={currentPage == "/macros"}
+                className={classes.menuItem}
+                onClick={() => setCurrentPage("/macros")}
               />
             </Link>
           )}
