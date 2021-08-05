@@ -39,7 +39,7 @@
     "appId": "keyboardio.chrysalis",
     "productName": "Chrysalis",
     "artifactName": "${productName}-${version}.${ext}",
-    "copyright": "Copyright © 2018, 2019, 2020 Keyboardio Inc.; distributed under the GPLv3",
+    "copyright": "Copyright © 2018, 2019, 2020, 2021 Keyboardio Inc.; distributed under the GPLv3",
     "mac": {
       "darkModeSupport": true,
       "hardenedRuntime": true,
