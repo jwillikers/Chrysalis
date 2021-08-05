@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (C) 2021  Keyboardio, Inc. -->
+<component type="desktop-application">
+  <id>io.keyboard.Chrysalis.desktop</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0</project_license>
+  <name>Chrysalis</name>
+  <summary>Graphical configurator for Kaleidoscope-powered keyboards</summary>
+
+  <description>
+    <p>
+        Chrysalis is a graphical configurator for Kaleidoscope-powered keyboards.
+        While still under development, it is already usable for a number of tasks.
+        To try it, you don't even need to flash Kaleidoscope beforehand, Chrysalis can do that for you, as it ships with reasonable default firmware for each supported board.
+    </p>
+    <p>
+        The primary purpose of the application is to allow one to configure their keyboard without having to compile or flash firmware, by storing the configuration on the keyboard itself, in EEPROM.
+        There are no external tools required, just Chrysalis itself.
+    </p>
+  </description>
+  
+  <launchable type="desktop-id">io.keyboard.Chrysalis.desktop</launchable>
+
+  <url type="homepage">https://keyboard.io</url>
+  <url type="bugtracker">https://github.com/keyboardio/Chrysalis/issues</url>
+  <url type="help">https://github.com/keyboardio/Chrysalis/wiki</url>
+
+  <screenshots>
+    <screenshot type="default">
+      <image>https://github.com/keyboardio/Chrysalis/raw/master/data/screenshot.png</image>
+      <caption>Chrysalis layout editor</caption>
+    </screenshot>
+  </screenshots>
+
+  <provides>
+    <binary>Chrysalis</binary>
+  </provides>
+
+  <content_rating type="oars-1.1" />
+
+  <releases>
+    <release version="0.8.4" date="2021-04-05">
+      <description>
+        <p>
+          This release has additional fixes for consumer keys, including a way to automatically migrate from old keycodes to new ones.
+        </p>
+      </description>
+    </release>
+    <release version="0.8.3" date="2021-03-29">
+      <description>
+        <p>
+            This release includes several bug fixes, UI/UX improvements, and new functionality.
+            New features include Croatian as the host keyboard choice and experimental support for running under Wayland on Linux.
+        </p>
+      </description>
+    </release>
+    <release version="0.8.2" date="2021-01-27">
+      <description>
+        <p>
+            This release contains bugfixes, UI/UX improvements, and most importantly ships with an updated version of the Kaleidoscope firmware for all keyboards.
+            The firmware update fixes an issue where macro keys were not working.
+        </p>
+      </description>
+    </release>
+    <release version="0.8.1" date="2021-01-25">
+      <description>
+        <p>
+            This release is primarily a bugfix release, with a number of small, but rather annoying issues ironed out.
+        </p>
+      </description>
+    </release>
+  </releases>
+
+</component>

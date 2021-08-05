@@ -23,11 +23,18 @@ build environment already set up. The script will not do that for you.
  [repo:bundle]: https://github.com/keyboardio/Chrysalis-Firmware-Bundle
 
 With the version bumped and firmware files updated, it is time to update
-[NEWS.md](../NEWS.md) with user-visible or otherwise important changes since the
-last release. Following the practice in earlier versions is the recommended way
-to do that. It is important to keep in mind that the NEWS file is aimed at end
-users, it must not be a filtered copy of the git log, but something a bit more
-elaborate, and perhaps considerably less technical in nature.
+[NEWS.md](../NEWS.md) and
+[io.keyboard.Chrysalis.metainfo.xml](../io.keyboard.Chrysalis.metainfo.xml) with
+user-visible or otherwise important changes since the last release. Following
+the practice in earlier versions is the recommended way to do that. It is
+important to keep in mind that this information is aimed at end users, it must
+not be a filtered copy of the git log, but something a bit more elaborate, and
+perhaps considerably less technical in nature.
+
+Make sure to verify the AppStream metadata file after making changes.
+
+    flatpak install flathub org.freedesktop.appstream-glib
+    flatpak run org.freedesktop.appstream-glib validate io.keyboard.Chrysalis.metainfo.xml
 
 Once these are done, we can commit them together, and tag the release as
 `v0.x.y`.
