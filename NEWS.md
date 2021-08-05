@@ -38,7 +38,7 @@ saving attempt irrelevant, but we have not adapted the picker accordingly. We
 now did so, and it looks much more like a common keyboard does, and now offers
 some of the keys that we've been missing since 0.8.0.
 
-Another major, noticable change is that the warning about using hardcoded and
+Another major, noticeable change is that the warning about using hardcoded and
 custom layers together is no longer a tiny line below the toolbar. As we no
 longer support such setups in Chrysalis, we want to make that clear, and not
 allow one to edit the keymap anyway. A non-blocking, short warning was found to
