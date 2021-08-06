@@ -17,7 +17,7 @@ jobs:
         run: sudo apt -y install appstream-util
 
       - name: Verify the AppStream metadata file
-        run: appstream-util validate io.keyboard.Chrysalis.metainfo.xml
+        run: appstream-util validate build/io.keyboard.Chrysalis.metainfo.xml
 
       - name: Install udev-dev
         run: sudo apt update && sudo apt install libudev-dev
