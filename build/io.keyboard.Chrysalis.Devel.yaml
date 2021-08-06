@@ -1,0 +1,90 @@
+app-id: io.keyboard.Chrysalis.Devel
+runtime: org.freedesktop.Platform
+runtime-version: "20.08"
+sdk: org.freedesktop.Sdk
+base: org.electronjs.Electron2.BaseApp
+base-version: "20.08"
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.node14
+separate-locales: false
+command: chrysalis
+finish-args:
+  # Chrysalis requires serial console access in order to update firmware and program keyboards.
+  - --device=all
+
+  - --device=dri
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --socket=pulseaudio
+  - --share=network
+  - --filesystem=xdg-run/pipewire-0
+  # If you need to access the filesystem, also add:
+  - --filesystem=home
+modules:
+  - name: yarn
+    buildsystem: simple
+    build-commands:
+      - cp -a * /app
+    cleanup:
+      - '*'
+    sources:
+      - type: archive
+        url: https://github.com/yarnpkg/yarn/releases/download/v1.22.11/yarn-v1.22.11.tar.gz
+        sha256: 2c320de14a6014f62d29c34fec78fdbb0bc71c9ccba48ed0668de452c1f5fe6c
+        x-checker-data:
+          type: anitya
+          project-id: 13363
+          url-template: https://github.com/yarnpkg/yarn/releases/download/$version/yarn-v$version.tar.gz
+
+  - name: chrysalis
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/node14/bin:/app/yarn/bin
+      env:
+        npm_config_nodedir: /usr/lib/sdk/node14
+        npm_config_cache: /run/build/chrysalis/flatpak-node/npm-cache
+        npm_config_offline: "true"
+        XDG_CACHE_HOME: /run/build/chrysalis/flatpak-node/cache
+    cleanup:
+      - /app/chrysalis/chrysalis
+    build-commands:
+      - sed -i 's/yarn /yarn --offline /g' package.json
+
+      # Rebuild native modules by electron-rebuild
+      # https://github.com/electron-userland/electron-builder/issues/4100
+      - sed -i 's/"build":\ {/"build":\ {\n"npmRebuild":\ false,/' package.json
+
+      - HOME=$PWD yarn config --offline set yarn-offline-mirror $FLATPAK_BUILDER_BUILDDIR/flatpak-node/yarn-mirror
+      - yarn --offline
+      - yarn --offline compile
+      - . flatpak-node/electron-builder-arch-args.sh; yarn --offline run electron-builder --linux dir -c.linux.target=dir $ELECTRON_BUILDER_ARCH_ARGS
+
+      - cp -r dist/linux*unpacked /app/chrysalis
+      - install -Dm 755 chrysalis.sh /app/bin/chrysalis
+      - install -Dm 644 build/io.keyboard.Chrysalis.desktop /app/share/applications/$FLATPAK_ID.desktop
+      - sed -i 's/Icon=io.keyboard.Chrysalis/Icon=io.keyboard.Chrysalis.Devel/' /app/share/applications/$FLATPAK_ID.desktop
+      - install -Dm 644 build/io.keyboard.Chrysalis.metainfo.xml /app/share/metainfo/$FLATPAK_ID.metainfo.xml
+      - sed -i 's/io.keyboard.Chrysalis.desktop/io.keyboard.Chrysalis.Devel.desktop/' /app/share/metainfo/$FLATPAK_ID.metainfo.xml
+      - for size in 64 128; do [[ -e "build/icon-${size}x${size}.png" ]] && install
+        -Dm644 "build/icon-${size}x${size}.png" "/app/share/icons/hicolor/${size}x${size}/apps/${FLATPAK_ID}.png";
+        done
+      - install -Dm 644 build/icon.png /app/share/icons/hicolor/256x256/apps/${FLATPAK_ID}.png
+    sources:
+      - type: git
+        url: ".."
+        # todo Change to master when merging.
+        branch: flatpak
+        # todo Use this in the release manifest.
+        # x-checker-data:
+        #   type: anitya
+        #   project-id: 141547
+        #   stable-only: true
+        #   tag-template: v$version
+
+      - generated-sources.json
+      - type: script
+        dest-filename: chrysalis.sh
+        commands:
+          - if [[ -n "$WAYLAND_DISPLAY" ]]; then set -- --enable-features=UseOzonePlatform --ozone-platform=wayland "$@"; fi
+          - zypak-wrapper.sh /app/chrysalis/chrysalis-bin "$@"
