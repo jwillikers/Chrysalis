@@ -27,7 +27,7 @@ modules:
     build-commands:
       - cp -a * /app
     cleanup:
-      - '*'
+      - "*"
     sources:
       - type: archive
         url: https://github.com/yarnpkg/yarn/releases/download/v1.22.11/yarn-v1.22.11.tar.gz
@@ -42,10 +42,21 @@ modules:
     build-options:
       append-path: /usr/lib/sdk/node14/bin:/app/yarn/bin
       env:
-        npm_config_nodedir: /usr/lib/sdk/node14
-        npm_config_cache: /run/build/chrysalis/flatpak-node/npm-cache
-        npm_config_offline: "true"
+        DEBUG: electron-builder
         XDG_CACHE_HOME: /run/build/chrysalis/flatpak-node/cache
+        npm_config_target: 12.0.0
+        # npm_config_build_from_source: true
+        # npm_config_nodedir: /usr/lib/sdk/node14
+        npm_config_nodedir: /run/build/chrysalis/flatpak-node/cache/node-gyp/12.0.0
+        # npm_config_cache: /run/build/chrysalis/flatpak-node/cache/node-gyp/12.0.0
+        npm_config_cache: /run/build/chrysalis/flatpak-node/npm-cache
+        # YARN_CACHE_FOLDER: /run/build/chrysalis/flatpak-node/yarn-cache
+        npm_config_offline: "true"
+        npm_config_no_save: "true"
+        npm_config_loglevel: verbose
+        # https://stackoverflow.com/questions/25146976/can-i-get-npm-gyp-to-use-ccache
+        CXX: ccache g++
+        CC: ccache gcc
     cleanup:
       - /app/chrysalis/chrysalis
     build-commands:
@@ -56,7 +67,8 @@ modules:
       - sed -i 's/"build":\ {/"build":\ {\n"npmRebuild":\ false,/' package.json
 
       - HOME=$PWD yarn config --offline set yarn-offline-mirror $FLATPAK_BUILDER_BUILDDIR/flatpak-node/yarn-mirror
-      - yarn --offline
+      - yarn --offline --pure-lockfile
+
       - yarn --offline compile
       - . flatpak-node/electron-builder-arch-args.sh; yarn --offline run electron-builder --linux dir -c.linux.target=dir $ELECTRON_BUILDER_ARCH_ARGS
 
@@ -75,13 +87,13 @@ modules:
         url: ".."
         # todo Change to master when merging.
         branch: flatpak
+
         # todo Use this in the release manifest.
         # x-checker-data:
         #   type: anitya
         #   project-id: 141547
         #   stable-only: true
         #   tag-template: v$version
-
       - generated-sources.json
       - type: script
         dest-filename: chrysalis.sh

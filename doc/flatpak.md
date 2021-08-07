@@ -41,7 +41,7 @@ Make sure to install yarn.
 
 Install the packages with yarn.
 
-    yarn install --package-lock-only
+    yarn install
 
 Fetch the Flatpak Node Generator Python script.
 
@@ -49,4 +49,4 @@ Fetch the Flatpak Node Generator Python script.
 
 Run the script against the `yarn.lock` file as shown here.
 
-    python3 flatpak-node-generator.py --xdg-layout yarn ../yarn.lock
+    python3 flatpak-node-generator.py --electron-node-headers --xdg-layout yarn ../yarn.lock
