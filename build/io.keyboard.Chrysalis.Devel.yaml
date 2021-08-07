@@ -37,6 +37,8 @@ modules:
           project-id: 13363
           url-template: https://github.com/yarnpkg/yarn/releases/download/$version/yarn-v$version.tar.gz
 
+  - shared-modules/libusb/libusb.json
+
   - name: chrysalis
     buildsystem: simple
     build-options:

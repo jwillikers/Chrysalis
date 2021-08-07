@@ -10,7 +10,7 @@ Install Flatpak Builder.
 
 Clone the Chrysalis repository as necessary.
 
-    git clone https://github.com/keyboardio/Chrysalis.git
+    git clone --recursive https://github.com/keyboardio/Chrysalis.git
 
 Change into the Chrysalis build directory.
 
