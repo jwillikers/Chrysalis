@@ -36,7 +36,6 @@ modules:
           type: anitya
           project-id: 13363
           url-template: https://github.com/yarnpkg/yarn/releases/download/$version/yarn-v$version.tar.gz
-
   - name: libusb
     config-opts:
       - --disable-static
@@ -55,6 +54,37 @@ modules:
           url-template: https://github.com/libusb/libusb/archive/v$version.tar.gz
     post-install:
       - install -Dm644 COPYING /app/share/licenses/libusb/COPYING
+  - name: udev
+    config-opts:
+      - --disable-hwdb
+      - --disable-logging
+      - --disable-gudev
+      - --disable-introspection
+      - --disable-keymap
+      - --disable-mtd_probe
+    cleanup:
+      - /include
+      - /etc
+      - /libexec
+      - /sbin
+      - /lib/pkgconfig
+      - /man
+      - /share/aclocal
+      - /share/doc
+      - /share/gtk-doc
+      - /share/man
+      - /share/pkgconfig
+      - "*.la"
+      - "*.a"
+    sources:
+      - type: archive
+        url: https://github.com/gentoo/eudev/archive/v3.2.10.tar.gz
+        sha256: 6492629da4024d2d21bb1a79d724e013d4152956099a5c63b09c8ee4da7f9b2b
+        x-checker-data:
+          type: anitya
+          project-id: 13466
+          stable-only: true
+          url-template: https://github.com/gentoo/eudev/archive/v$version.tar.gz
 
   - name: chrysalis
     buildsystem: simple
