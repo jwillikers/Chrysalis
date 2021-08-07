@@ -146,4 +146,4 @@ modules:
         dest-filename: chrysalis.sh
         commands:
           - if test -n "$WAYLAND_DISPLAY" && test -e "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"; then set -- --enable-features=UseOzonePlatform --ozone-platform=wayland "$@"; fi
-          - zypak-wrapper.sh /app/chrysalis/chrysalis-bin "$@"
+          - /app/chrysalis/chrysalis-bin --no-sandbox "$@"
