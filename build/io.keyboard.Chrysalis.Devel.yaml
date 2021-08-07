@@ -17,8 +17,6 @@ finish-args:
   - --socket=x11
   - --socket=pulseaudio
   - --share=network
-  # If you need to access the filesystem, also add:
-  - --filesystem=home
 modules:
   - name: yarn
     buildsystem: simple
