@@ -78,7 +78,7 @@ modules:
       - install -Dm 644 build/io.keyboard.Chrysalis.desktop /app/share/applications/$FLATPAK_ID.desktop
       - sed -i 's/Icon=io.keyboard.Chrysalis/Icon=io.keyboard.Chrysalis.Devel/' /app/share/applications/$FLATPAK_ID.desktop
       - install -Dm 644 build/io.keyboard.Chrysalis.metainfo.xml /app/share/metainfo/$FLATPAK_ID.metainfo.xml
-      - sed -i 's/io.keyboard.Chrysalis.desktop/io.keyboard.Chrysalis.Devel.desktop/' /app/share/metainfo/$FLATPAK_ID.metainfo.xml
+      - sed -i 's/io.keyboard.Chrysalis/io.keyboard.Chrysalis.Devel/' /app/share/metainfo/$FLATPAK_ID.metainfo.xml
       - for size in 64 128; do [[ -e "build/icon-${size}x${size}.png" ]] && install
         -Dm644 "build/icon-${size}x${size}.png" "/app/share/icons/hicolor/${size}x${size}/apps/${FLATPAK_ID}.png";
         done
