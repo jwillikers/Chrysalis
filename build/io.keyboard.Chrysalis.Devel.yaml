@@ -8,6 +8,12 @@ sdk-extensions:
   - org.freedesktop.Sdk.Extension.node14
 separate-locales: false
 command: chrysalis
+tags:
+  - devel
+  - development
+  - nightly
+# todo Better distinguish between the release and development installations by using a dedicated icon to represent the development Flatpak instead of prefixing the name.
+desktop-file-name-prefix: "(Development) "
 finish-args:
   # Chrysalis requires serial console access in order to update firmware and program keyboards.
   - --device=all
