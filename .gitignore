@@ -10,3 +10,4 @@
 build/repo/
 build/.flatpak-builder/
 build/build-dir/
+build/flatpak-node-generator.py
