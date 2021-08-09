@@ -46,6 +46,7 @@ import usb from "usb";
 import i18n from "../i18n";
 
 import { installUdevRules } from "../utils/installUdevRules";
+import { insideFlatpak } from "../utils/insideFlatpak";
 
 const styles = theme => ({
   loader: {
@@ -346,6 +347,7 @@ class KeyboardSelect extends React.Component {
 
     if (
       process.platform == "linux" &&
+      !insideFlatpak() &&
       selectedDevice &&
       !selectedDevice.accessible
     ) {
