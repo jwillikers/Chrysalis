@@ -19,6 +19,7 @@ import Delimiter from "@serialport/parser-delimiter";
 import fs from "fs";
 
 import Log from "../log";
+import { insideFlatpak, listPorts } from "../../renderer/utils/flatpak";
 
 global.chrysalis_focus_instance = null;
 
@@ -51,7 +52,13 @@ class Focus {
     const delay = ms => new Promise(res => setTimeout(res, ms));
 
     for (let attempt = 0; attempt < 10; attempt++) {
-      let portList = await SerialPort.list();
+      let portList;
+      if (insideFlatpak()) {
+        console.log("Inside Flatpak");
+        portList = await listPorts();
+      } else {
+        portList = await SerialPort.list();
+      }
       this.debugLog(
         "focus.waitForBootloader: portList:",
         portList,
@@ -81,7 +88,13 @@ class Focus {
   }
 
   async find(...devices) {
-    let portList = await SerialPort.list();
+    let portList;
+    if (insideFlatpak()) {
+      console.log("Inside Flatpak");
+      portList = await listPorts();
+    } else {
+      portList = await SerialPort.list();
+    }
 
     let found_devices = [];
 

@@ -46,7 +46,7 @@ import usb from "usb";
 import i18n from "../i18n";
 
 import { installUdevRules } from "../utils/installUdevRules";
-import { insideFlatpak } from "../utils/insideFlatpak";
+import { insideFlatpak } from "../utils/flatpak";
 
 const styles = theme => ({
   loader: {
