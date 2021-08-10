@@ -54,52 +54,66 @@ const productRegex = /^PRODUCT=(?<vendorId>\d+)\/(?<modelId>\d+)\/.*/;
 async function listPorts() {
   return new Promise(async () => {
     const ports = [];
-
+    let openedDir;
     try {
-      let openedDir = await fs.promises.opendir(ttySysClassPath);
-      for await (const fileDirent of openedDir) {
-        try {
-          const dir = fileDirent.name;
-          console.log("dir: " + dir);
-          const dirPath = path.join(ttySysClassPath, dir);
-          console.log("dirPath: " + dirPath);
-
-          const stat = await fs.promises.stat(dirPath);
-          if (!stat.isDirectory()) {
-            continue;
-          }
-
-          let port = { path: path.join("/dev", dir) };
-          console.log("Path: " + port["path"]);
-          const fileStream = fs.createReadStream(
-            path.join(dirPath, "device", "uevent")
-          );
-
-          const rl = readline.createInterface({
-            input: fileStream,
-            crlfDelay: Infinity
-          });
-
-          for await (const line of rl) {
-            console.log("Line: " + line);
-            const found = line.match(productRegex);
-            if (!found) {
-              continue;
-            }
-            port["vendorId"] = found.groups["vendorId"];
-            console.log("Vendor ID: " + port["vendorId"]);
-            port["modelId"] = found.groups["modelId"];
-            console.log("Model ID: " + port["modelId"]);
-            ports.push(port);
-            break;
-          }
-        } catch (err) {
-          console.debug(err);
-          continue;
-        }
-      }
+      openedDir = await fs.promises.opendir(ttySysClassPath);
     } catch (err) {
       console.error(err);
+      return ports;
+    }
+    for await (const fileDirent of openedDir) {
+      const dir = fileDirent.name;
+      console.log("dir: " + dir);
+      const dirPath = path.join(ttySysClassPath, dir);
+      console.log("dirPath: " + dirPath);
+
+      let stat;
+      try {
+        stat = await fs.promises.stat(dirPath);
+      } catch (err) {
+        console.debug(err);
+        continue;
+      }
+      if (!stat.isDirectory()) {
+        continue;
+      }
+
+      let port = { path: path.join("/dev", dir) };
+      console.log("Path: " + port["path"]);
+
+      console.log("Creating readStream: " + port["path"]);
+      let fileStream;
+      try {
+        fileStream = fs.createReadStream(
+          path.join(dirPath, "device", "uevent")
+        );
+      } catch (err) {
+        console.debug(err);
+        continue;
+      }
+
+      console.log("Creating readline interface...");
+
+      const rl = readline.createInterface({
+        input: fileStream,
+        crlfDelay: Infinity
+      });
+
+      console.log("Looping over the lines of the file...");
+
+      for await (const line of rl) {
+        console.log("Line: " + line);
+        const found = line.match(productRegex);
+        if (!found) {
+          continue;
+        }
+        port["vendorId"] = found.groups["vendorId"];
+        console.log("Vendor ID: " + port["vendorId"]);
+        port["modelId"] = found.groups["modelId"];
+        console.log("Model ID: " + port["modelId"]);
+        ports.push(port);
+        break;
+      }
     }
 
     return ports;
