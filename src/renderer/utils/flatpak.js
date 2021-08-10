@@ -42,57 +42,58 @@ function insideFlatpak() {
 // INTERFACE=2/2/0
 // MODALIAS=usb:v1209p2301d0100dcEFdsc02dp01ic02isc02ip00in00
 
+const ttySysClassPath = "/sys/class/tty";
+const productRegex = /^PRODUCT=(?<vendorId>\d+)\/(?<modelId>\d+)\/.*/;
+
 async function listPorts() {
-  return new Promise(resolve => {
-    const ttySysClassPath = "/sys/class/tty";
+  return new Promise(async resolve => {
     const ports = [];
-    const hasDeviceUeventFile = dir => {
-      return fs.lstatSync(path.join(dir, "device", "uevent")).isFile();
-    };
 
-    const isDir = fileName => {
-      return fs.lstatSync(fileName).isDirectory();
-    };
+    try {
+      let openedDir = await fs.promises.opendir(ttySysClassPath);
+      for await (const fileDirent of openedDir) {
+        try {
+          const dir = fileDirent.name;
+          console.log("dir: " + dir);
+          const dirPath = path.join(ttySysClassPath, dir);
+          console.log("dirPath: " + dirPath);
 
-    const getDirectories = folderPath =>
-      fs
-        .readdirSync(folderPath)
-        .map(fileName => {
-          return path.join(folderPath, fileName);
-        })
-        .filter(isDir);
+          const stat = await fs.promises.stat(dirPath);
+          if (!stat.isDirectory()) {
+            continue;
+          }
 
-    console.log("Directories: " + getDirectories(ttySysClassPath).values());
+          let port = { path: path.join("/dev", dir) };
+          console.log("Path: " + port["path"]);
+          const fileStream = fs.createReadStream(
+            path.join(dirPath, "device", "uevent")
+          );
 
-    for (const dirPath of getDirectories(ttySysClassPath).values()) {
-      const dir = path.basename(dirPath);
-      // console.log("dir: " + dir);
-      // const dirPath = path.join(ttySysClassPath, dir);
-      console.log("dirPath: " + dirPath);
-      if (!hasDeviceUeventFile(dirPath)) {
-        continue;
-      }
-      let port = { path: path.join("/dev", dir) };
-      console.log("Path: " + port["path"]);
-      const fileStream = fs.createReadStream(
-        path.join(dirPath, "device", "uevent")
-      );
-      const lines = readline.createInterface({
-        input: fileStream,
-        crlfDelay: Infinity
-      });
+          const rl = readline.createInterface({
+            input: fileStream,
+            crlfDelay: Infinity
+          });
 
-      lines.on("line", line => {
-        const values = line.match(/^PRODUCT=(.*),(.*),.*/);
-        if (!values) {
-          return;
+          for await (const line of rl) {
+            console.log("Line: " + line);
+            const found = line.match(productRegex);
+            if (!found) {
+              continue;
+            }
+            port["vendorId"] = found.groups["vendorId"];
+            console.log("Vendor ID: " + port["vendorId"]);
+            port["modelId"] = found.groups["modelId"];
+            console.log("Model ID: " + port["modelId"]);
+            ports.push(port);
+            break;
+          }
+        } catch (err) {
+          console.log(err);
+          continue;
         }
-        port["vendorId"] = values[0];
-        console.log("Vendor ID: " + port["vendorId"]);
-        port["modelId"] = values[1];
-        console.log("Model ID: " + port["model"]);
-        ports.push(port);
-      });
+      }
+    } catch (err) {
+      console.error(err);
     }
 
     resolve(ports);
