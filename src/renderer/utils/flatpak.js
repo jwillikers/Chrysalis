@@ -46,7 +46,7 @@ const ttySysClassPath = "/sys/class/tty";
 const productRegex = /^PRODUCT=(?<vendorId>\d+)\/(?<modelId>\d+)\/.*/;
 
 async function listPorts() {
-  return new Promise(async resolve => {
+  return new Promise(async () => {
     const ports = [];
 
     try {
@@ -88,7 +88,7 @@ async function listPorts() {
             break;
           }
         } catch (err) {
-          console.log(err);
+          console.debug(err);
           continue;
         }
       }
@@ -96,7 +96,7 @@ async function listPorts() {
       console.error(err);
     }
 
-    resolve(ports);
+    return ports;
   });
 }
 
