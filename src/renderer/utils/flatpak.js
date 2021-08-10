@@ -19,9 +19,15 @@ import fs from "fs";
 import path from "path";
 import readline from "readline";
 
-function insideFlatpak() {
-  const flatpakInfoPath = "/.flatpak-info";
-  return process.platform == "linux" && fs.existsSync(flatpakInfoPath);
+const flatpakInfoPath = "/.flatpak-info";
+
+async function insideFlatpak() {
+  return (
+    process.platform == "linux" &&
+    (await fs.promises.access(flatpakInfoPath).catch(() => {
+      return false;
+    }))
+  );
 }
 
 // Linux example port
