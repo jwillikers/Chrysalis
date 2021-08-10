@@ -48,6 +48,15 @@ async function insideFlatpak() {
 // INTERFACE=2/2/0
 // MODALIAS=usb:v1209p2301d0100dcEFdsc02dp01ic02isc02ip00in00
 
+function createReadStreamSafe(filename, options) {
+  return new Promise((resolve, reject) => {
+    const fileStream = fs.createReadStream(filename, options);
+    fileStream.on("error", reject).on("open", () => {
+      resolve(fileStream);
+    });
+  });
+}
+
 const ttySysClassPath = "/sys/class/tty";
 const productRegex = /^PRODUCT=(?<vendorId>\d+)\/(?<modelId>\d+)\/.*/;
 
@@ -84,7 +93,7 @@ async function listPorts() {
       console.log("Creating readStream: " + port["path"]);
       let fileStream;
       try {
-        fileStream = fs.createReadStream(
+        fileStream = await createReadStreamSafe(
           path.join(dirPath, "device", "uevent")
         );
       } catch (err) {
@@ -114,8 +123,11 @@ async function listPorts() {
         ports.push(port);
         break;
       }
+
+      console.log("Finished looping over the lines of the file");
     }
 
+    console.log("Ports: " + ports);
     return ports;
   });
 }
