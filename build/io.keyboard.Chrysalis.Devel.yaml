@@ -97,5 +97,6 @@ modules:
       - type: script
         dest-filename: chrysalis.sh
         commands:
+          - export ZYPAK_DISABLE_SANDBOX=1
           - if test -n "$WAYLAND_DISPLAY" && test -e "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"; then set -- --enable-features=UseOzonePlatform --ozone-platform=wayland "$@"; fi
-          - /app/chrysalis/chrysalis-bin --no-sandbox "$@"
+          - zypak-wrapper.sh /app/chrysalis/chrysalis-bin "$@"
