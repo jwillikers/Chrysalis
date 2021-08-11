@@ -30,7 +30,7 @@ async function insideFlatpak() {
   );
 }
 
-// Linux example port
+// Linux example port as reported by udevadm
 // {
 //   path: '/dev/ttyACM0',
 //   manufacturer: 'Arduino (www.arduino.cc)',
@@ -40,7 +40,8 @@ async function insideFlatpak() {
 //   productId: '2301',
 //   vendorId: '1209'
 // }
-// Example Model01 at /dev/ttyACM0 /sys/class/tty/ttyACM0/device/uevent
+//
+// Sample file /sys/class/tty/ttyACM0/device/uevent for Model 01, serial port /dev/ttyACM0
 // DEVTYPE=usb_interface
 // DRIVER=cdc_acm
 // PRODUCT=1209/2301/100
@@ -72,15 +73,12 @@ function listPorts() {
     }
     for await (const fileDirent of openedDir) {
       const dir = fileDirent.name;
-      console.log("dir: " + dir);
       const dirPath = path.join(ttySysClassPath, dir);
-      console.log("dirPath: " + dirPath);
 
       let stat;
       try {
         stat = await fs.promises.stat(dirPath);
       } catch (err) {
-        console.debug(err);
         continue;
       }
       if (!stat.isDirectory()) {
@@ -88,46 +86,32 @@ function listPorts() {
       }
 
       let port = { path: path.join("/dev", dir) };
-      console.log("Path: " + port.path);
 
-      console.log("Creating readStream: " + port.path);
       let fileStream;
       try {
         fileStream = await createReadStreamSafe(
           path.join(dirPath, "device", "uevent")
         );
       } catch (err) {
-        console.debug(err);
         continue;
       }
-
-      console.log("Creating readline interface...");
 
       const rl = readline.createInterface({
         input: fileStream,
         crlfDelay: Infinity
       });
 
-      console.log("Looping over the lines of the file...");
-
       for await (const line of rl) {
-        console.log("Line: " + line);
         const found = line.match(productRegex);
         if (!found) {
           continue;
         }
         port.vendorId = found.groups["vendorId"];
-        console.log("Vendor ID: " + port.vendorId);
         port.productId = found.groups["productId"];
-        console.log("Product ID: " + port.productId);
         ports.push(port);
         break;
       }
-
-      console.log("Finished looping over the lines of the file");
     }
-
-    console.dir(ports, { maxArrayLength: null });
     resolve(ports);
   });
 }

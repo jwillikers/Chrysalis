@@ -54,7 +54,6 @@ class Focus {
     for (let attempt = 0; attempt < 10; attempt++) {
       let portList;
       if (insideFlatpak()) {
-        console.log("Inside Flatpak");
         portList = await listPorts();
       } else {
         portList = await SerialPort.list();
@@ -90,7 +89,6 @@ class Focus {
   async find(...devices) {
     let portList;
     if (insideFlatpak()) {
-      console.log("Inside Flatpak");
       portList = await listPorts();
     } else {
       portList = await SerialPort.list();
