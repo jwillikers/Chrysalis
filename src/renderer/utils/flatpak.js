@@ -62,7 +62,7 @@ const productRegex = /^PRODUCT=(?<vendorId>\d+)\/(?<modelId>\d+)\/.*/;
 
 async function listPorts() {
   return new Promise(async () => {
-    const ports = [];
+    let ports = [];
     let openedDir;
     try {
       openedDir = await fs.promises.opendir(ttySysClassPath);
@@ -88,9 +88,9 @@ async function listPorts() {
       }
 
       let port = { path: path.join("/dev", dir) };
-      console.log("Path: " + port["path"]);
+      console.log("Path: " + port.path);
 
-      console.log("Creating readStream: " + port["path"]);
+      console.log("Creating readStream: " + port.path);
       let fileStream;
       try {
         fileStream = await createReadStreamSafe(
@@ -116,10 +116,10 @@ async function listPorts() {
         if (!found) {
           continue;
         }
-        port["vendorId"] = found.groups["vendorId"];
-        console.log("Vendor ID: " + port["vendorId"]);
-        port["modelId"] = found.groups["modelId"];
-        console.log("Model ID: " + port["modelId"]);
+        port.vendorId = found.groups["vendorId"];
+        console.log("Vendor ID: " + port.vendorId);
+        port.modelId = found.groups["modelId"];
+        console.log("Model ID: " + port.modelId);
         ports.push(port);
         break;
       }
@@ -127,7 +127,7 @@ async function listPorts() {
       console.log("Finished looping over the lines of the file");
     }
 
-    console.log("Ports: " + ports);
+    console.dir(ports, { maxArrayLength: null });
     return ports;
   });
 }
