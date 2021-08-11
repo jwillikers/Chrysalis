@@ -61,14 +61,14 @@ const ttySysClassPath = "/sys/class/tty";
 const productRegex = /^PRODUCT=(?<vendorId>\d+)\/(?<modelId>\d+)\/.*/;
 
 function listPorts() {
-  return new Promise(async () => {
+  return new Promise(async (resolve, reject) => {
     let ports = [];
     let openedDir;
     try {
       openedDir = await fs.promises.opendir(ttySysClassPath);
     } catch (err) {
       console.error(err);
-      return ports;
+      reject(err);
     }
     for await (const fileDirent of openedDir) {
       const dir = fileDirent.name;
@@ -128,7 +128,7 @@ function listPorts() {
     }
 
     console.dir(ports, { maxArrayLength: null });
-    return ports;
+    resolve(ports);
   });
 }
 
