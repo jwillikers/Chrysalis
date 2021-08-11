@@ -60,7 +60,7 @@ function createReadStreamSafe(filename, options) {
 const ttySysClassPath = "/sys/class/tty";
 const productRegex = /^PRODUCT=(?<vendorId>\d+)\/(?<modelId>\d+)\/.*/;
 
-async function listPorts() {
+function listPorts() {
   return new Promise(async () => {
     let ports = [];
     let openedDir;
