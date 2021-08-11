@@ -58,7 +58,7 @@ function createReadStreamSafe(filename, options) {
 }
 
 const ttySysClassPath = "/sys/class/tty";
-const productRegex = /^PRODUCT=(?<vendorId>\d+)\/(?<modelId>\d+)\/.*/;
+const productRegex = /^PRODUCT=(?<vendorId>\d+)\/(?<productId>\d+)\/.*/;
 
 function listPorts() {
   return new Promise(async (resolve, reject) => {
@@ -118,8 +118,8 @@ function listPorts() {
         }
         port.vendorId = found.groups["vendorId"];
         console.log("Vendor ID: " + port.vendorId);
-        port.modelId = found.groups["modelId"];
-        console.log("Model ID: " + port.modelId);
+        port.productId = found.groups["productId"];
+        console.log("Product ID: " + port.productId);
         ports.push(port);
         break;
       }
