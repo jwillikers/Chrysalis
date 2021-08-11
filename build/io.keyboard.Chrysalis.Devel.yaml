@@ -18,6 +18,9 @@ finish-args:
   # Chrysalis requires serial console access in order to update firmware and program keyboards.
   - --device=all
 
+  # Chrysalis can export and import keyboard layers to files, so permissions to the download directory are provided.
+  - --filesystem=xdg-download
+
   - --device=dri
   - --share=ipc
   - --socket=x11
