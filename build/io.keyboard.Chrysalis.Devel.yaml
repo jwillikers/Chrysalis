@@ -7,7 +7,7 @@ base-version: "20.08"
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.node14
 separate-locales: false
-command: chrysalis
+command: run.sh
 tags:
   - devel
   - development
@@ -58,10 +58,27 @@ modules:
         CXX: ccache g++
         CC: ccache gcc
     cleanup:
-      - /app/chrysalis/chrysalis
+      - /app/main/chrysalis
+    subdir: main
+    sources:
+      - type: git
+        url: ".."
+        # todo Change to master when merging.
+        branch: flatpak
+        dest: main
+        x-checker-data:
+          type: git
+          tag-pattern: ^v([\\d.]+)$
+          version-scheme: semantic
+      - generated-sources.json
+      - type: script
+        dest-filename: run.sh
+        commands:
+          # The sandbox prevents access to the serial devices which are under /dev
+          - export ZYPAK_DISABLE_SANDBOX=1
+          - if test -n "$WAYLAND_DISPLAY" && test -e "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"; then set -- --enable-features=UseOzonePlatform --ozone-platform=wayland "$@"; fi
+          - zypak-wrapper.sh /app/main/chrysalis-bin "$@"
     build-commands:
-      - sed -i 's/yarn /yarn --offline /g' package.json
-
       # Rebuild native modules by electron-rebuild
       # https://github.com/electron-userland/electron-builder/issues/4100
       - sed -i 's/"build":\ {/"build":\ {\n"npmRebuild":\ false,/' package.json
@@ -70,10 +87,12 @@ modules:
       - yarn --offline --pure-lockfile
 
       - yarn --offline compile
-      - . flatpak-node/electron-builder-arch-args.sh; yarn --offline run electron-builder --linux dir -c.linux.target=dir $ELECTRON_BUILDER_ARCH_ARGS
+      - |
+        . ../flatpak-node/electron-builder-arch-args.sh
+        yarn --offline run electron-builder --linux dir -c.linux.target=dir $ELECTRON_BUILDER_ARCH_ARGS
 
-      - cp -r dist/linux*unpacked /app/chrysalis
-      - install -Dm 755 chrysalis.sh /app/bin/chrysalis
+      - cp -r dist/linux*unpacked /app/main
+      - install -Dm 755 -t /app/bin/ ../run.sh
       - install -Dm 644 build/io.keyboard.Chrysalis.desktop /app/share/applications/$FLATPAK_ID.desktop
       - sed -i 's/Icon=io.keyboard.Chrysalis/Icon=io.keyboard.Chrysalis.Devel/' /app/share/applications/$FLATPAK_ID.desktop
       - install -Dm 644 build/io.keyboard.Chrysalis.metainfo.xml /app/share/metainfo/$FLATPAK_ID.metainfo.xml
@@ -82,21 +101,3 @@ modules:
         -Dm644 "build/icon-${size}x${size}.png" "/app/share/icons/hicolor/${size}x${size}/apps/${FLATPAK_ID}.png";
         done
       - install -Dm 644 build/icon.png /app/share/icons/hicolor/256x256/apps/${FLATPAK_ID}.png
-    sources:
-      - type: git
-        url: ".."
-        # todo Change to master when merging.
-        branch: flatpak
-        # todo Use this in the release manifest.
-        # x-checker-data:
-        #   type: anitya
-        #   project-id: 141547
-        #   stable-only: true
-        #   tag-template: v$version
-      - generated-sources.json
-      - type: script
-        dest-filename: chrysalis.sh
-        commands:
-          - export ZYPAK_DISABLE_SANDBOX=1
-          - if test -n "$WAYLAND_DISPLAY" && test -e "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"; then set -- --enable-features=UseOzonePlatform --ozone-platform=wayland "$@"; fi
-          - zypak-wrapper.sh /app/chrysalis/chrysalis-bin "$@"

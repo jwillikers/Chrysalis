@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Chrysalis
-Exec=chrysalis %U
+Exec=run.sh %U
 Terminal=false
 Type=Application
 Icon=io.keyboard.Chrysalis
