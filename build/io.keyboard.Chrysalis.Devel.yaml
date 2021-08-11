@@ -49,12 +49,8 @@ modules:
         DEBUG: electron-builder
         XDG_CACHE_HOME: /run/build/chrysalis/flatpak-node/cache
         npm_config_target: 12.0.0
-        # npm_config_build_from_source: true
-        # npm_config_nodedir: /usr/lib/sdk/node14
         npm_config_nodedir: /run/build/chrysalis/flatpak-node/cache/node-gyp/12.0.0
-        # npm_config_cache: /run/build/chrysalis/flatpak-node/cache/node-gyp/12.0.0
         npm_config_cache: /run/build/chrysalis/flatpak-node/npm-cache
-        # YARN_CACHE_FOLDER: /run/build/chrysalis/flatpak-node/yarn-cache
         npm_config_offline: "true"
         npm_config_no_save: "true"
         npm_config_loglevel: verbose
@@ -91,7 +87,6 @@ modules:
         url: ".."
         # todo Change to master when merging.
         branch: flatpak
-
         # todo Use this in the release manifest.
         # x-checker-data:
         #   type: anitya
